@@ -1,14 +1,35 @@
 import React from 'react'
 import { useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+
 
 const UpdateProfile = () => {
+    const navigate=useNavigate();
     const usernameInputRef = useRef()
     const profileUrlInputRef = useRef();
-    const formSubmitHandler=()=>{
-   
+    const token= localStorage.getItem('token')
+
+
+
+    const btnHandler=()=>{
+        fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDeEdrVt4u11fGigu620gWbNo_fW39vd7s',{
+          method:'POST',
+          body:JSON.stringify({
+            idToken:token
+          }),
+          headers:{
+            'Content-Type':'application/json'
+          }
+        }).then(res=>res.json()).then(data=>console.log(data))
+      }
+
+    const formSubmitHandler=(event)=>{
+     event.preventDefault();
         const enteredUsername = usernameInputRef.current.value 
         const enteredProfileUrl = profileUrlInputRef.current.value
         const token = localStorage.getItem('token')
+       
         
         fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyDeEdrVt4u11fGigu620gWbNo_fW39vd7s',{
             method:'POST',
@@ -22,7 +43,8 @@ const UpdateProfile = () => {
             headers:{
                 'Content-Type':'application/json'
             }
-        }).then(res=>res.json()).then(data=>console.log(data))
+        }).then(res=>res.json()).then(data=>console.log('data',data))
+        
 
     }
   return (
@@ -36,24 +58,24 @@ const UpdateProfile = () => {
                 </div>
         </header>
         
-        
+        <button onClick={btnHandler}>Get Info</button>
         <hr></hr>
         <center>
         <h2>Contact Details</h2>
         <div>
             
-        <form className='w-75 card p-4'>
-  <div class="form-group" onSubmit={formSubmitHandler}>
+        <form className='w-75 card p-4' onSubmit={formSubmitHandler}>
+  <div className="form-group" >
   <button className='btn position-absolute top-0 end-0 me-4 border solid border-dark mt-2' >X</button>
-    <label for="exampleInputEmail1">Full Name:</label>
-    <input type="" class="form-control mt-3" id="exampleInputEmail1" ref={usernameInputRef}  placeholder="Enter fullname" />
+    <label htmlFor="exampleInputEmail1">Full Name:</label>
+    <input type="" className="form-control mt-3" id="exampleInputEmail1" ref={usernameInputRef}  placeholder="Enter fullname" />
   </div>
-  <div class="form-group">
-    <label for="exampleInputphotourl">Profile Photo URL:</label>
-    <input type="" class="form-control mt-3" id="exampleInputphotourl" ref={profileUrlInputRef} placeholder="profile photo url" />
+  <div className="form-group">
+    <label htmlFor="exampleInputphotourl">Profile Photo URL:</label>
+    <input type="" className="form-control mt-3" id="exampleInputphotourl" ref={profileUrlInputRef} placeholder="profile photo url" />
   </div>
 
-  <button type="submit" class="btn btn-primary mt-3">Update</button>
+  <button type="submit" className="btn btn-primary mt-3">Update</button>
 </form>
 </div>
 </center>
