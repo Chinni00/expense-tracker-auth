@@ -16,53 +16,65 @@ const Login = () => {
         setIsLogin((prevState) => !prevState);
       };
     
-      const submitHandler=(event)=>{
+      const submitHandler = (event) => {
         event.preventDefault();
-        const enteredEmail = emailInputRef.current.value 
-        const enteredPassword = passwordInputRef.current.value
-        const enteredConfirmPassword = confirmPasswordInputRef.current.value
-
-        if(enteredPassword!==enteredConfirmPassword){
-            setPasswordWarning(true)
-            return ''
+        const enteredEmail = emailInputRef.current.value;
+        const enteredPassword = passwordInputRef.current.value;
+      
+        setPasswordWarning(false);
+        setIsLoading(true);
+      
+        let url;
+      
+        if (isLogin) {
+          url =
+            'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDeEdrVt4u11fGigu620gWbNo_fW39vd7s';
+      
+          // Perform sign-in logic
+        } else {
+          const enteredConfirmPassword = confirmPasswordInputRef.current.value;
+          if (enteredPassword !== enteredConfirmPassword) {
+            setPasswordWarning(true);
+            setIsLoading(false);
+            return '';
+          }
+      
+          url =
+            'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDeEdrVt4u11fGigu620gWbNo_fW39vd7s';
+      
+          // Perform sign-up logic
         }
-         // 
-         setPasswordWarning(false)
-         setIsLoading(true);
-          
-         let url;
-
-         if(isLogin){
-
-         }else{
-            url ='https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDeEdrVt4u11fGigu620gWbNo_fW39vd7s'
-         }
-         fetch(url,{
-            method:'POST',
-            body:JSON.stringify({
-                email:enteredEmail,
-                password:enteredPassword,
-                returnSecureToken:true
-            }),
-            headers:{
-                'Content-type':'application/json'
+      
+        fetch(url, {
+          method: 'POST',
+          body: JSON.stringify({
+            email: enteredEmail,
+            password: enteredPassword,
+            returnSecureToken: true
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+          .then((res) => {
+            setIsLoading(false);
+            if (res.ok) {
+                  return res.json().then(data=>{ 
+                   { isLogin ? localStorage.setItem('token',data.idToken):alert('successfully account created ') }
+                  })
+            } else {
+              return res.json().then((data) => {
+                let errorMessage = 'Authentication failure';
+                if (data && data.error && data.error.message) {
+                  errorMessage = data.error.message;
+                }
+                throw new Error(errorMessage);
+              });
             }
-         }).then(res=>{
-            setIsLoading(false)
-            if(res.ok){
-                console.log('successfully created')
-            }else{
-                return res.json().then(data=>{
-                    let errorMessage = 'Authentication faliure'
-                    if(data && data.error && data.error.message){
-                        errorMessage= data.error.message
-                    }
-                    alert(errorMessage)
-                })
-            }
-         })
-
-      }
+          })
+          .catch((err) => alert(err.message));
+      };
+      
   return (
     <div>
          <center className="">
@@ -104,7 +116,7 @@ const Login = () => {
               ref={confirmPasswordInputRef}
               className="form-control mt-2"
               id="exampleInputConfirmPassword1"
-              placeholder="Password"
+              placeholder="Confirm Password"
             />
           </div>}
         {passwordWarning && <p className='text-danger'>Password and confirm password should be same</p>}
