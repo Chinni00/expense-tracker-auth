@@ -1,82 +1,106 @@
-import React, { useEffect, useState } from 'react'
-import {  useNavigate } from 'react-router-dom'
-
-
-
-
+import React, { useEffect,  useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
+import ExpenseList from "./ExpenseList";
 
 const Welcome = () => {
-  const token = localStorage.getItem('token');
-  const [email,setEmail] = useState('')
+  const [expenses,setExpenses] = useState([])
+   const moneyInputRef = useRef()
+   const descriptionInputRef = useRef()
+   const categoryInputRef = useRef()
 
-  // useEffect(()=>{
-  //   fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDeEdrVt4u11fGigu620gWbNo_fW39vd7s',{
-  //     method:'POST',
-  //     body:JSON.stringify({
-  //       idToken:token
-  //     }),
-  //     headers:{
-  //       'Content-Type':'application/json'
-  //     }
-  //   }).then(res=>res.json()).then(data=>console.log(data))
-  // },[])
+   const fetchingHandler = () => {
+    fetch('https://expense-tracker-auth-b79c5-default-rtdb.firebaseio.com/expenses.json')
+      .then(res => res.json())
+      .then(data => {
+        const fetchedExpenses = Object.values(data);
+        setExpenses(fetchedExpenses);
+      })
+      .catch(err => console.log(err));
+  };
+  
 
-  // 3tSuo92sX5pc0Lcuht250-l4jBa0KEnXrMZgA7cJn1EAAAGI6Unxew
-  // 3tSuo92sX5pc0Lcuht250-l4jBa0KEnXrMZgA7cJn1EAAAGI6Unxew
-
-  const isverified=()=>{
-    fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyDeEdrVt4u11fGigu620gWbNo_fW39vd7s',{
-      method:'POST',
-      body:JSON.stringify({
-        oobCode:'3tSuo92sX5pc0Lcuht250-l4jBa0KEnXrMZgA7cJn1EAAAGI6Unxew'
-      }),
-      headers:{
-        'Content-Type':'application/json'
+  const submitHandler = (event) => {
+    event.preventDefault();
+    const enteredMoney = moneyInputRef.current.value;
+    const enteredDescription = descriptionInputRef.current.value;
+    const enteredCategory = categoryInputRef.current.value;
+    let obj = {
+      price: enteredMoney,
+      description: enteredDescription,
+      category: enteredCategory
+    };
+  
+    fetch('https://expense-tracker-auth-b79c5-default-rtdb.firebaseio.com/expenses.json', {
+      method: 'POST',
+      body: JSON.stringify(obj),
+      headers: {
+        'Content-Type': 'application/json'
       }
-    }).then(res=>res.json()).then(data=>console.log(data))
-    
-  }
-
-
-
-  const navigate= useNavigate()
-
-  const switchToUpdatePage=()=>{
-     navigate('/update-profile')
-  }
-  const emailVerificationHandler = ()=>{
-          fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyDeEdrVt4u11fGigu620gWbNo_fW39vd7s',{
-            method:'POST',
-            body:JSON.stringify({
-              requestType:"VERIFY_EMAIL",
-              idToken:token,
-            }),
-            headers:{
-              'Content-Type':'application/json'
-            }
-          }).then(res=>res.json()).then(data=> {
-            setEmail(data.email)
-           console.log(data)
-          })
-  }
-
-  const logoutHandler=()=>{
-    localStorage.removeItem('token')
-    navigate('/')
-  }
+    })
+      .then(res => res.json())
+      .then(() => {
+        moneyInputRef.current.value = '';
+        descriptionInputRef.current.value = '';
+        categoryInputRef.current.value = '';
+        fetchingHandler(); // Fetch expenses again after the new expense is saved
+      })
+      .catch(err => console.log(err));
+  };
+  
+  
+  useEffect(()=>{
+   fetchingHandler()
+  },[])
 
   return (
     <div>
-        <center>
-            <h1>Welcome to expense tracker</h1>
-            <span><i>Your Profile is Incompleted <a href='#' onClick={switchToUpdatePage} >Complete Now</a></i></span><br />
-          You have to verify your email to maintain ur account long   <button onClick={emailVerificationHandler} className='btn  btn-secondary'>Verify Email</button>
-          <button onClick={isverified}>Is Verified</button>
-          <button onClick={logoutHandler}>Logout</button>
-        </center>
-       
-    </div>
-  )
-}
+      <Navbar />
+      <center>
+        <h1>Welcome to expense tracker</h1>
+        <div className="w-50 mt-4">
+          <form onSubmit={submitHandler}>
+            <div className="form-group">
+              <label htmlFor="exampleInputEmail1" className=" float-start">Spent Money:</label>
+              <input
+               ref={moneyInputRef}
+                type=""
+                className="form-control"
+                id="exampleInputEmail1"
+                aria-describedby="emailHelp"
+                placeholder="Enter money"
+              />
+            </div>
+            <div className="form-group m-2">
+              <label htmlFor="exampleInputPassword1" className=" float-start">Description:</label>
+              <input
+                ref={descriptionInputRef}
+                type=""
+                className="form-control"
+                id="exampleInputPassword1"
+                placeholder="description"
+              />
+            </div>
+            <div className="form-group m-2">
+              <label htmlFor="exampleFormControlSelect1" className=" float-start">Category :</label>
+              <select ref={categoryInputRef} className="form-control" id="exampleFormControlSelect1">
+                <option selected  value={'none'} >Select Category</option>
+                <option>Food</option>
+                <option>Petrol</option>
+                <option>Entertainment</option>
+                <option>Others</option>
+              </select>
+            </div>
+            <button type="submit" className="btn btn-primary">
+              Submit
+            </button>
+          </form>
+        </div>
+      </center>
+     {expenses.length>0 && <ExpenseList  value={expenses} />}
 
-export default Welcome
+    </div>
+  );
+};
+
+export default Welcome;
