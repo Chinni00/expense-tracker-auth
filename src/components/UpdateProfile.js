@@ -12,17 +12,7 @@ const UpdateProfile = () => {
 
 
 
-    const btnHandler=()=>{
-        fetch('https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyDeEdrVt4u11fGigu620gWbNo_fW39vd7s',{
-          method:'POST',
-          body:JSON.stringify({
-            idToken:token
-          }),
-          headers:{
-            'Content-Type':'application/json'
-          }
-        }).then(res=>res.json()).then(data=>console.log(data))
-      }
+   
 
     const formSubmitHandler=(event)=>{
      event.preventDefault();
@@ -44,7 +34,7 @@ const UpdateProfile = () => {
                 'Content-Type':'application/json'
             }
         }).then(res=>res.json()).then(data=>console.log('data',data))
-        
+        navigate('/welcome')
 
     }
   return (
@@ -53,12 +43,12 @@ const UpdateProfile = () => {
             <div className='mt-3 p-1'><i>Winners never quit, Quitters never win</i></div>
             <div className='w-25 p-1 bg-secondary-subtle rounded rounded-1'>
                 <i>
-                your profile is <b>64%</b> completed. A Complete profile has higher chances of landing a job.<a href='#'>Complete now</a>
+                your profile is <b>64%</b> completed. A Complete profile has higher chances of landing a job.Complete now
                 </i>
                 </div>
         </header>
         
-        <button onClick={btnHandler}>Get Info</button>
+       
         <hr></hr>
         <center>
         <h2>Contact Details</h2>
