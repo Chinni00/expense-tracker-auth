@@ -5,6 +5,7 @@ import ExpenseList from "./ExpenseList";
 
 const Welcome = () => {
   const [id,setId]=useState('')
+  const [total,setTotal] = useState(0)
   const [isEdit,setIsEdit] = useState(false)
   const [expenses,setExpenses] = useState([])
    const moneyInputRef = useRef()
@@ -102,6 +103,7 @@ const Welcome = () => {
   
  const idHandler=(id)=>{
 setId(id)
+moneyInputRef.current.focus()
 setIsEdit(true)
  }
   
@@ -113,7 +115,7 @@ setIsEdit(true)
   console.log(expenses)
   return (
     <div>
-      <Navbar />
+      <Navbar value={expenses}/>
       <center>
         <h1>Welcome to expense tracker</h1>
         <div className="w-50 mt-4">
@@ -150,7 +152,7 @@ setIsEdit(true)
               </select>
             </div>
             <button type="submit" className="btn btn-primary">
-             { isEdit? 'Edit':'Submit'}
+             { isEdit? 'Edit':'Add'}
             </button>
           </form>
         </div>
