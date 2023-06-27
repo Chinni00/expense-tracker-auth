@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ const Login = () => {
   return (
     <div>
       <center className="">
+        <Navbar />
         <h1 className="mt-5">{isLogin ? "Login" : "Sign Up"}</h1>
         <div className="card w-75 mt-5 p-5 shadow-1">
           <form onSubmit={submitHandler}>
@@ -142,12 +144,13 @@ const Login = () => {
             <br></br>
             <a
               href="#"
-              className="text-danger"
+              className=""
               style={{ cursor: "pointer" }}
               onClick={switchAuthMode}
             >
               {isLogin ? "Create a new account" : "Login with existing account"}
             </a>
+            <a href="#" onClick={()=>{navigate('/forgotPassword')}} className="ms-3 text-danger">Forgot Password</a>
           </form>
         </div>
       </center>

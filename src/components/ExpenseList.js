@@ -1,11 +1,18 @@
-import React from "react";
+import { useState } from "react";
 
 const ExpenseList = ({value,onDelete,onEdit}) => {
-console.log('value',value[0])
-let expense = Object.entries(value[0])
-console.log(' exp',expense)
+  let [total,setTotal]= useState(0)
+  const  [isPremium,setIspremium] = useState(false)
 
-    
+const rupeeSymbol = "\u20B9" 
+let expense = Object.entries(value[0])
+expense.forEach((expense)=>{
+   total=total+ Number(expense[1].price)
+  
+})
+
+
+   console.log('total',total) 
   return (
     <div className="card m-5 p-4">
       <center>
@@ -19,7 +26,7 @@ console.log(' exp',expense)
              className="border border-2 border-black p-2 w-75 d-flex justify-content-around mt-3"
              style={{ fontWeight: 400 }}
            >
-             <span className="ms-5 ">$. {item[1].price}</span>
+             <span className="ms-5 "> {rupeeSymbol}. {item[1].price}</span>
              <span className="ms-5">{item[1].category}</span>
              <span className="ms-5">{item[1].description}</span>
 
